@@ -1,0 +1,27 @@
+{
+  "name": "entrega1_backendii",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "type": "module",
+  "author": "Melisa Rivas",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.1.0",
+    "express-handlebars": "^8.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongo": "^0.1.0",
+    "mongoose": "^8.15.0",
+    "mongoose-paginate-v2": "^1.9.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
+    "socket.io": "^4.8.1"
+  }
+}

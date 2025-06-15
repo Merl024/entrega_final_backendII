@@ -1,0 +1,31 @@
+<div>
+    {{!-- Las vistas que tengan los usuarios con role 'user' --}}
+    {{#if user}}
+        <h1>Tu perfil</h1>
+        <p>{{user.name}}</p>
+        <p>{{user.email}}</p>
+        <p>{{user.age}}</p>
+        <h2>Todos los productos en todos los carritos:</h2>
+            {{#if allProducts.length}}
+                <ul>
+                {{#each allProducts}}
+                    <li>
+                        {{this.product.title}} - Cantidad: {{this.quantity}}
+                    </li>
+                {{/each}}
+                </ul>
+            {{else}}
+                <p>No hay productos en los carritos.</p>
+            {{/if}}
+        {{#if isAdmin}}
+        {{!-- Las vistas que tengan los usuarios con role 'admin' --}}
+            <h2>Panel de administrador</h2>
+            <a href="/realtimeproducts">
+                <button>Registrar nuevo producto</button>
+            </a>
+        {{/if}}
+    {{else}}
+        <h1>Inicia sesión para ver tu perfil</h1>
+        <a href="/users/login">Ingresar</a>
+    {{/if}}
+</div>
