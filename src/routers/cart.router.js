@@ -1,5 +1,7 @@
 import express from 'express'
 import * as cartController from '../controllers/cart.controller.js'
+import { passportCall, authorization } from '../utils.js'
+import { addProductToCart } from '../services/cart.service.js'
 
 const router = express.Router()
 
@@ -13,7 +15,7 @@ router.get('/:cid', cartController.getCartById)
 router.post('/', cartController.createCart)
 
 // POST /:cid/product/:pid - Publicar un producto (por id) dentro del id del carrito
-router.post('/:cid/product/:pid', cartController.addProductToCart)
+// router.post('/:cid/product/:pid', cartController.addProductToCart)
 
 // // DELETE api/carts/:cid/products/:pid - elimina el producto seleccionado del carrito
 router.delete('/:cid/products/:pid', cartController.deleteProductFromCart)
@@ -26,5 +28,12 @@ router.put('/:cid/products/:pid', cartController.updateProductQuantity)
 
 // DELETE api/carts/:cid - elemina TODOS los productos del carrito
 router.delete('/:cid', cartController.clearCart)
+
+// Ruta para que el usuario autenticado agregue productos a su carrito
+router.post('/user/add/:pid',
+    passportCall('current'),
+    authorization('user'),
+    cartController.addProductToUserCart 
+)
 
 export default router

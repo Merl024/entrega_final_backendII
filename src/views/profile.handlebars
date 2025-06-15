@@ -16,11 +16,9 @@
                 </ul>
                 {{else}}
                     <h6>No hay productos en los carritos.</h6>
-                    <a href="">
-                        <button>Agregar producto</button>
-                    </a>
             {{/if}}
-
+            <a href="/users/shop" class="btn btn-primary"> Ver productos </a>
+            <a href="/carts/{{user.cart.[0]._id}}" class="btn btn-success">Ver carrito</a>
     {{#if isAdmin}}
     {{!-- Las vistas que tengan los usuarios con role 'admin' --}}
         <h2>Panel de administrador</h2>

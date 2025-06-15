@@ -5,6 +5,7 @@ import passportLocal from "passport-local";
 
 import { createHash, isValidPassword, PRIVATE_KEY } from "../utils.js";
 import { userModel } from "../models/user.model.js";
+import { cartModel } from "../models/cart.model.js";
 
 const localStrategy = passportLocal.Strategy
 const jwtStrategy = JWTStrategy.Strategy
@@ -42,6 +43,9 @@ const initializePassport = () => {
                     return done(null, false)                    
                 }
 
+                // Si no se proporciona un carrito, se asigna el nuevo carrito creado - Utilizado principalmente para el frontend
+                const newCart = await cartModel.create({ products: [] })
+
                 // En caso que no exista
                 const newUser = {
                     first_name,
@@ -49,7 +53,7 @@ const initializePassport = () => {
                     email,
                     age,
                     password: createHash(password),
-                    cart: cart || [],
+                    cart: [newCart._id], 
                     role: role || 'user'
                 }
 

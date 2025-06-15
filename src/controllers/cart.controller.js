@@ -1,4 +1,7 @@
 import * as cartService from '../services/cart.service.js'
+import { cartModel } from '../models/cart.model.js';
+import { productModel } from '../models/product.model.js';
+import { userModel } from '../models/user.model.js';
 
 export const getCarts = async (req, res) => {
     try {
@@ -13,7 +16,7 @@ export const getCartById = async (req, res) => {
     try {
         const cart = await cartService.getCartById(req.params.cid)
         if (!cart) return res.status(404).json({ error: 'Carrito no existente' })
-        res.json({ status: 'success', payload: cart })
+        res.status(201).send({ status: 'success', payload: cart })
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
@@ -28,30 +31,21 @@ export const createCart = async (req, res) => {
     }
 }
 
-export const addProductToCart = async (req, res) => {
-    try {
-        const updatedCart = await cartService.addProductToCart(req.params.cid, req.params.pid)
-        res.json({
-            status: 'success',
-            message: `Producto con ID ${req.params.pid} agregado/actualizado en el carrito ${req.params.cid}`,
-            payload: updatedCart
-        })
-    } catch (error) {
-        res.status(500).json({ error: error.message })
-    }
-}
+// export const addProductToCart = async (req, res) => {
+//     try {
+//         const updatedCart = await cartService.addProductToCart(req.params.cid, req.params.pid)
+//         res.json({
+//             status: 'success',
+//             message: `Producto con ID ${req.params.pid} agregado/actualizado en el carrito ${req.params.cid}`,
+//             payload: updatedCart
+//         })
+//     } catch (error) {
+//         res.status(500).json({ error: error.message })
+//     }
+// }
 
 export const deleteProductFromCart = async (req, res) => {
-    try {
-        const cart = await cartService.deleteProductFromCart(req.params.cid, req.params.pid)
-        res.json({
-            status: 'success',
-            message: `Producto con ID ${req.params.pid} eliminado del carrito ${req.params.cid}`,
-            cart
-        })
-    } catch (error) {
-        res.status(500).json({ error: error.message })
-    }
+    return cartService.deleteProductFromCart(req, res);
 }
 
 export const updateCartProducts = async (req, res) => {
@@ -96,3 +90,51 @@ export const clearCart = async (req, res) => {
         res.status(500).json({ error: error.message })
     }
 }
+
+export const addProductToUserCart = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const productId = req.params.pid;
+        const quantity = parseInt(req.body.quantity, 10) || 1;
+
+        // Buscar usuario
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+        // Buscar producto
+        const product = await productModel.findById(productId);
+        if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
+
+        if (product.stock < quantity) {
+            return res.status(400).json({ error: 'No hay suficiente stock disponible' });
+        }
+
+        // Obtener el carrito del usuario (asumimos que solo tiene uno)
+        let cartId = user.cart[0];
+        let cart = await cartModel.findById(cartId);
+        if (!cart) {
+            // Si no tiene carrito, crear uno y asociarlo
+            const newCart = await cartModel.create({ products: [] });
+            user.cart = [newCart._id];
+            await user.save();
+            cart = newCart;
+        }
+
+        // Buscar si el producto ya está en el carrito
+        const prodIndex = cart.products.findIndex(p => p.product.toString() === productId);
+        if (prodIndex !== -1) {
+            cart.products[prodIndex].quantity += quantity;
+        } else {
+            cart.products.push({ product: productId, quantity });
+        }
+        await cart.save();
+
+        // Restar stock al producto
+        product.stock -= quantity;
+        await product.save();
+
+        res.json({ status: 'success', message: 'Producto agregado al carrito' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

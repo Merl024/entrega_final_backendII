@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authorization, passportCall } from "../utils.js";
 import { userModel } from "../models/user.model.js";
+import { productModel } from "../models/product.model.js";
 
 const router = Router()
 
@@ -77,5 +78,14 @@ router.get('/admin',
         });
     }
 )
+
+router.get('/shop',
+    passportCall('current'),
+    authorization('user'),
+    async (req, res) => {
+        const products = await productModel.find().lean();
+        res.render('shop', { products, user: req.user });
+    }
+);
 
 export default router
