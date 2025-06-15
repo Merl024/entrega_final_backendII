@@ -1,32 +1,30 @@
 const form = document.getElementById('registerForm')
 
 
-form.addEventListener('submit', e => {
+form.addEventListener('submit', async function(e) {
     e.preventDefault();
-    const dataForm = new FormData(form)
 
-    const obj = {};
-    dataForm.forEach((value, key) => {
-        obj[key] = value;
+    const data = {
+        first_name: this.first_name.value,
+        last_name: this.last_name.value,
+        email: this.email.value,
+        age: this.age.value,
+        password: this.password.value
+    };
+
+    const response = await fetch('/api/sessions/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
     });
 
-    fetch('/api/sessions/register', {
-        method: 'POST',
-        body: JSON.stringify(obj),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(result => {
-        console.log("result.status", result.status);
+    const result = await response.json();
 
-        if (result.status === 200) {
-            result.json()
-            alert("Usuario creado con exito!");
-            window.location.replace('/users/login');
-        } else {
-            alert("No se pudo crear el usuario!");
-        }
-    })
-
-})
+    if (response.status === 201) {
+        // Registro exitoso, redirige al login
+        window.location.href = '/users/login';
+    } else {
+        alert(result.msg || 'No se pudo crear el usuario!');
+    }
+});
 

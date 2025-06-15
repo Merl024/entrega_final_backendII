@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { authorization, passportCall } from "../utils.js";
 import { userModel } from "../models/user.model.js";
-import { cartModel } from "../models/cart.model.js";
 
 const router = Router()
 

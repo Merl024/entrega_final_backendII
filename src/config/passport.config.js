@@ -24,6 +24,17 @@ const initializePassport = () => {
             const { first_name, last_name, email, cart, age, role } = req.body
 
             try {
+                // Verificando la contraseña
+                const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
+                if (!regex.test(password)) {
+                    return done(null, false, { message: 'La contraseña debe contener al menos una letra mayúscula, una minúscula y un número' })
+                }
+
+                // Verificando que los campos requeridos esten completos
+                if (!first_name || !last_name || !age) {
+                    return done(null, false, { message: 'Todos los campos son obligatorios' })
+                }
+
                 // Verificando que el email no este ya registrado en la base de datos
                 const userExist = await userModel.findOne({email})
                 if(userExist){
@@ -112,7 +123,6 @@ const cookieExtractor = req => {
     let token = null
 
     if(req && req.cookies){
-        console.log('Cookies ' + req.cookies);
 
         token = req.cookies['jwtCookieToken']
         

@@ -6,7 +6,6 @@ import { dirname } from 'path'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
-import { Strategy } from 'passport-jwt'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -24,7 +23,7 @@ export const PRIVATE_KEY = 'coderSecret'
 
 // Funcion para generar el token
 export const generateToken = user => {
-    return jwt.sign({ user }, PRIVATE_KEY, { expiresIn: '180s' }) // por efectos de prueba lo dejare en 3 minutos
+    return jwt.sign({ user }, PRIVATE_KEY, { expiresIn: '1h' })
 }
 
 // Middleware para autenticacion en las rutas

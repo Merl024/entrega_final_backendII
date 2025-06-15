@@ -8,12 +8,17 @@ import cookieParser from 'cookie-parser'
 import __dirname from './utils.js'
 import { Server } from 'socket.io'
 
+// Configuracion de variables de entorno
+import config from './config/config.js'
+
 // Routers
-import viewsRouter from './routers/views.router.js'
+import viewsRouter from './routers/product.views.router.js'
 import productRouter from './routers/product.router.js'
 import cartRouter from './routers/cart.router.js'
 import userViewsRouter from './routers/user.views.routes.js'
 import sessionRouter from './routers/session.router.js'
+import userRouter from './routers/user.router.js'
+
 
 // Models
 import { productModel } from './models/product.model.js'
@@ -22,7 +27,6 @@ import initializePassport from './config/passport.config.js'
 
 
 const app = express()
-const SERVER_PORT = 8080
 
 // Middleware para recibir objetos JSON
 app.use(express.json())
@@ -33,9 +37,6 @@ app.engine('handlebars', handlebars.engine())
 app.set('view engine', 'handlebars')
 app.set('views', __dirname + '/views')
 app.use(express.static(__dirname + '/public'))
-
-// CONEXION A MONGO DB COMPASS
-const MONGO_URL = 'mongodb://localhost:27017/entregable?retryWrites=true&w=majority'
 
 // Cookie parser
 app.use(cookieParser('SecretoCoder'))
@@ -50,16 +51,17 @@ app.use('/api/products', productRouter)
 app.use('/api/carts', cartRouter)
 app.use('/users', userViewsRouter )
 app.use('/api/sessions', sessionRouter)
+app.use('/api/users', userRouter)
 
 // Server listen 
-const httpServer = app.listen(SERVER_PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${SERVER_PORT}`);    
+const httpServer = app.listen(config.port, () => {
+    console.log(`Servidor corriendo en el puerto ${config.port}`);    
 })
 
 // Conexion con la base de datos
 const connecMongoDB = async () => {
     try {
-        await mongoose.connect(MONGO_URL)
+        await mongoose.connect(config.mongoUrl)
         console.log('Conectado con la base de datos');
         
     } catch (error) {
