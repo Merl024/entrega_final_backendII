@@ -3,6 +3,7 @@
 ## Descripción
 
 Este proyecto es una API y aplicación web para la gestión de usuarios, productos, carritos de compras y tickets de compra, con autenticación, autorización, recuperación de contraseña y envío de facturas por correo electrónico.
+Para dicho proyecto, se esta utilizando una arquitectura de capas (persistencia, negocio, renderizado, routing y servicio). Asi como el uso del patron de diseño Repository 
 
 ---
 
