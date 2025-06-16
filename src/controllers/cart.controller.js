@@ -31,19 +31,6 @@ export const createCart = async (req, res) => {
     }
 }
 
-// export const addProductToCart = async (req, res) => {
-//     try {
-//         const updatedCart = await cartService.addProductToCart(req.params.cid, req.params.pid)
-//         res.json({
-//             status: 'success',
-//             message: `Producto con ID ${req.params.pid} agregado/actualizado en el carrito ${req.params.cid}`,
-//             payload: updatedCart
-//         })
-//     } catch (error) {
-//         res.status(500).json({ error: error.message })
-//     }
-// }
-
 export const deleteProductFromCart = async (req, res) => {
     return cartService.deleteProductFromCart(req, res);
 }
@@ -109,18 +96,16 @@ export const addProductToUserCart = async (req, res) => {
             return res.status(400).json({ error: 'No hay suficiente stock disponible' });
         }
 
-        // Obtener el carrito del usuario (asumimos que solo tiene uno)
         let cartId = user.cart[0];
         let cart = await cartModel.findById(cartId);
         if (!cart) {
-            // Si no tiene carrito, crear uno y asociarlo
+
             const newCart = await cartModel.create({ products: [] });
             user.cart = [newCart._id];
             await user.save();
             cart = newCart;
         }
 
-        // Buscar si el producto ya está en el carrito
         const prodIndex = cart.products.findIndex(p => p.product.toString() === productId);
         if (prodIndex !== -1) {
             cart.products[prodIndex].quantity += quantity;
@@ -129,12 +114,24 @@ export const addProductToUserCart = async (req, res) => {
         }
         await cart.save();
 
-        // Restar stock al producto
-        product.stock -= quantity;
-        await product.save();
-
         res.json({ status: 'success', message: 'Producto agregado al carrito' });
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export const purchaseCart = async (req, res) => {
+    try {
+
+        const cart = await cartModel.findById(req.params.cid).populate('products.product');
+        if (!cart) return res.status(404).json({ error: 'Carrito no encontrado' });
+
+        const user = req.user; 
+        const ticket = await cartService.purchaseCart(user, cart);
+
+        res.json({ status: 'success', ticket });
+    } catch (error) {
+        console.error('Error en purchaseCart:', error);
         res.status(500).json({ error: error.message });
     }
 };

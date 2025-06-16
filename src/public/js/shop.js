@@ -10,7 +10,7 @@ async function addToCart(productId) {
     const data = await res.json();
     if (data.status === 'success') {
         alert('Producto agregado al carrito');
-        // Actualizar stock en la tabla
+        
         const stockCell = document.getElementById(`stock-${productId}`);
         if (stockCell) {
             let stock = parseInt(stockCell.textContent, 10);

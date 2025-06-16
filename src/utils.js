@@ -23,7 +23,7 @@ export const PRIVATE_KEY = 'coderSecret'
 
 // Funcion para generar el token
 export const generateToken = user => {
-    return jwt.sign({ user }, PRIVATE_KEY, { expiresIn: '1h' })
+    return jwt.sign({ user }, PRIVATE_KEY, { expiresIn: 3600 })
 }
 
 // Middleware para autenticacion en las rutas
@@ -36,8 +36,8 @@ export const passportCall = (strategy) => {
                 return res.status(401).send({ status: 'error', error: info.messages ? info.messages : info.toString() })
             }
 
-            req.user = user // Si el usuario existe lo guardamos en la request
-            next() // Si todo sale bien continuamos con la siguiente funcion            
+            req.user = user 
+            next()         
         }) (req, res, next)
     }
 }

@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 
+// Colección de usuarios
 const userCollection = 'users'
 
 const userSchema = new mongoose.Schema({
@@ -31,7 +32,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'user',
         enum: ['admin', 'user']
-    }
+    },
+    resetToken: String,
+    resetTokenExpires: Date
 })
 
 export const userModel = mongoose.model(userCollection, userSchema)

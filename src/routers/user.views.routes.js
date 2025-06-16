@@ -13,7 +13,7 @@ router.get('/register', (req, res) => {
     res.render('register')
 })
 
-// Ruta para usuarios normales: solo ven sus datos y productos de su(s) carrito(s)
+// Ruta para usuarios normales: solo ven sus datos y productos de su carrito
 router.get('/',
     passportCall('current'),
     authorization('user'),

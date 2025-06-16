@@ -1,9 +1,11 @@
-{{!-- Handlebars para mostrar en pantalla el carrito que se especifico en addToCart --}}
+{{!-- Handlebars para mostrar los productos que fueron agregados al carrito
+    Agregando la funcion que pueda eliminar un producto mas el procesamiento de la factura --}}
 <div class="container">
     <h1>Carrito de Compras</h1>
     {{#if payload.products.length}}
         <div class="cart-items">
             {{#each payload.products}}
+            {{#if product._id}}
             <div class="cart-item card mb-3">
                 <div class="card-body">
                     <h3>{{product.title}}</h3>
@@ -12,7 +14,11 @@
                     <button class="btn btn-danger" onclick="deleteProductFromCart('{{../payload._id}}', '{{product._id}}')">Eliminar</button>
                 </div>
             </div>
+            {{/if}}
             {{/each}}
+        </div>
+        <button class="btn btn-success" id="purchaseBtn" data-cartid="{{payload._id}}">Finalizar compra</button>
+        <div id="ticketResult" class="mt-3"></div>
     {{else}}
         <p>El carrito está vacío</p>
     {{/if}}

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// Haciendo la conexion a la coleccion donde quiero guardar las carts
+// Colección de carritos
 const cartCollection = 'carts'
 
 // Esquema de item del carrito (contiene el producto y la cantidad)
@@ -43,7 +43,6 @@ const cartSchema = new mongoose.Schema({
     }
 });
 
-// Middleware para hacer populate de los productos al consultar el carrito
 cartSchema.pre('findOne', function (next) {
     this.populate('products.product');
     next();

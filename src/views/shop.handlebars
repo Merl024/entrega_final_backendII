@@ -1,34 +1,36 @@
-<h2>Tienda de productos</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Cantidad</th>
-            <th>Acción</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{#each products}}
-        <tr>
-            <td>{{this.title}}</td>
-            <td>{{this.description}}</td>
-            <td>{{this.price}}</td>
-            <td id="stock-{{this._id}}">{{this.stock}}</td>
-            <td>
-                <input type="number" id="qty-{{this._id}}" min="1" max="{{this.stock}}" value="1"
-                    {{#unless this.stock}}disabled{{/unless}}>
-            </td>
-            <td>
-                <button class="btn btn-primary" onclick="addToCart('{{this._id}}')"
-                    {{#unless this.stock}}disabled{{/unless}}>
-                    Agregar al carrito
-                </button>
-            </td>
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
+<div class="container">
+    <h1>Tienda de productos</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Cantidad</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each products}}
+            <tr>
+                <td>{{this.title}}</td>
+                <td>{{this.description}}</td>
+                <td>${{this.price}}</td>
+                <td>{{this.stock}}</td>
+                <td>
+                    <input type="number" id="qty-{{this._id}}" value="1" min="1" max="{{this.stock}}"
+                        style="width:60px;">
+                </td>
+                <td>
+                    <button class="btn btn-primary" onclick="addToCart('{{this._id}}')">Agregar al carrito</button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<!-- SweetAlert y lógica de agregar al carrito -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/shop.js"></script>

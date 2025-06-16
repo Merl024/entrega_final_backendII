@@ -12,7 +12,7 @@ import { Server } from 'socket.io'
 import config from './config/config.js'
 
 // Routers
-import viewsRouter from './routers/product.views.router.js'
+import productViewsRouter from './routers/product.views.router.js'
 import productRouter from './routers/product.router.js'
 import cartRouter from './routers/cart.router.js'
 import userViewsRouter from './routers/user.views.routes.js'
@@ -46,7 +46,7 @@ initializePassport()
 app.use(passport.initialize())
 
 // Rutas
-app.use('/', viewsRouter)
+app.use('/', productViewsRouter)
 app.use('/api/products', productRouter)
 app.use('/api/carts', cartRouter)
 app.use('/users', userViewsRouter )

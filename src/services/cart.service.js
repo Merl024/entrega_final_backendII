@@ -1,6 +1,7 @@
 import * as cartRepository from '../repository/cart.repository.js'
 import { productModel } from '../models/product.model.js'
 import CartDTO from '../dto/cart.dto.js'
+import { generateTicket } from './ticket.service.js';
 
 export const getCarts = async (req, res) => {
     try {
@@ -148,3 +149,37 @@ export const clearCart = async (req, res) => {
         res.status(500).json({ error: 'Error al eliminar los productos del carrito' })
     }
 }
+
+export const purchaseCart = async (user, cart) => {
+    let total = 0;
+    const purchasedProducts = [];
+
+    // Filtra productos nulos o eliminados
+    cart.products = cart.products.filter(item => item.product && item.product !== null);
+
+    for (const item of cart.products) {
+        const product = item.product; 
+        if (product && product.stock >= item.quantity) {
+            total += product.price * item.quantity;
+            purchasedProducts.push({
+                product,
+                quantity: item.quantity
+            });
+            product.stock -= item.quantity;
+            await product.save();
+        }
+    }
+
+    // Genera ticket y envía factura
+    const ticket = await generateTicket({
+        user,
+        products: purchasedProducts,
+        amount: total
+    });
+
+    // Limpiamos el carrito
+    cart.products = [];
+    await cart.save();
+
+    return ticket;
+};

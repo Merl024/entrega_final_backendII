@@ -9,6 +9,20 @@
         <input type="password" name="password">
         <input type="submit">
     </form>
+    <button class="btn btn-link" onclick="openResetModal()">¿Olvidaste tu contraseña?</button>
+</div>
+
+<!-- Modal para solicitar email -->
+<div id="resetModal" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%,-50%); background:white; padding:2em; border-radius:8px; box-shadow:0 0 10px #0003;">
+    <h3>Recuperar contraseña</h3>
+    <form id="resetRequestForm">
+        <label>Email</label>
+        <input name="email" type="email" required>
+        <button type="submit" class="btn btn-primary">Enviar enlace</button>
+        <button type="button" class="btn btn-secondary" onclick="closeResetModal()">Cancelar</button>
+    </form>
+    <div id="resetMsg"></div>
 </div>
 
 <script src="/js/login.js"></script>
+<script src="/js/resetPassword.js"></script>

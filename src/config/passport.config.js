@@ -4,9 +4,12 @@ import JWTStrategy from "passport-jwt";
 import passportLocal from "passport-local";
 
 import { createHash, isValidPassword, PRIVATE_KEY } from "../utils.js";
+
+// Modelos de usuario y carrito
 import { userModel } from "../models/user.model.js";
 import { cartModel } from "../models/cart.model.js";
 
+// Estrategias de passport
 const localStrategy = passportLocal.Strategy
 const jwtStrategy = JWTStrategy.Strategy
 const extractJWT = JWTStrategy.ExtractJwt
@@ -36,14 +39,12 @@ const initializePassport = () => {
                     return done(null, false, { message: 'Todos los campos son obligatorios' })
                 }
 
-                // Verificando que el email no este ya registrado en la base de datos
                 const userExist = await userModel.findOne({email})
                 if(userExist){
                     res.json({msg: "El usuario ya existe "})
                     return done(null, false)                    
                 }
 
-                // Si no se proporciona un carrito, se asigna el nuevo carrito creado - Utilizado principalmente para el frontend
                 const newCart = await cartModel.create({ products: [] })
 
                 // En caso que no exista

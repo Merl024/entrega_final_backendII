@@ -1,9 +1,20 @@
+import crypto from 'crypto'
+import nodemailer from 'nodemailer'
+import config from '../config/config.js'
 import { userModel } from '../models/user.model.js'
-import { generateToken, isValidPassword, createHash } from '../utils.js'
+import { generateToken, createHash, isValidPassword } from '../utils.js'
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    auth: {
+        user: config.gmailAccount,
+        pass: config.gmailAppPsw
+    }
+})
 
 export const register = async (req, res) => {
     if (!req.user) {
-        // Passport pone el mensaje de error en req.authInfo.message si usas failureFlash
         return res.status(400).json({ status: "Error", msg: "No se pudo registrar el usuario" })
     }
     res.status(201).json({ status: "Success", msg: "Usuario creado con éxito", user: req.user })
@@ -23,7 +34,8 @@ export const login = async (req, res) => {
 
         const tokenUser = {
             _id: user._id,
-            name: `${user.first_name} ${user.last_name}`,
+            first_name: user.first_name,
+            last_name: user.last_name,
             email: user.email,
             age: user.age,
             cart: user.cart,
@@ -148,3 +160,51 @@ export const failLogin = (req, res) => {
 export const failAuth = (req, res) => {
     res.status(401).json({ status: "error", message: "Error de autenticación: usuario no autenticado o token inválido" });
 }
+
+export const resetPasswordRequest = async (req, res) => {
+    const { email } = req.body
+    const user = await userModel.findOne({ email })
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' })
+
+    const token = crypto.randomBytes(32).toString('hex')
+    const expires = Date.now() + 3600000 // 1 hora
+
+    user.resetToken = token
+    user.resetTokenExpires = expires
+    await user.save()
+
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/sessions/reset-password/${token}`
+    await transporter.sendMail({
+        from: config.gmailAccount,
+        to: email,
+        subject: 'Recuperación de contraseña',
+        html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+               <a href="${resetUrl}">Restablecer contraseña</a>
+               <p>Este enlace expirará en 1 hora.</p>`
+    })
+    res.json({ status: 'success', msg: 'Correo de recuperación enviado' })
+}
+
+export const renderResetPassword = async (req, res) => {
+    const { token } = req.params
+    const user = await userModel.findOne({ resetToken: token, resetTokenExpires: { $gt: Date.now() } })
+    if (!user) return res.send('Enlace inválido o expirado')
+    res.render('resetPassword', { token })
+}
+
+export const resetPassword = async (req, res) => {
+    const { token, password } = req.body
+    const user = await userModel.findOne({ resetToken: token, resetTokenExpires: { $gt: Date.now() } })
+    if (!user) return res.status(400).json({ error: 'Enlace inválido o expirado' })
+
+    if (isValidPassword(user, password)) {
+        return res.status(400).json({ error: 'No puedes usar la misma contraseña anterior' })
+    }
+
+    user.password = createHash(password)
+    user.resetToken = undefined
+    user.resetTokenExpires = undefined
+    await user.save()
+    res.json({ status: 'success', msg: 'Contraseña restablecida correctamente' })
+}
+

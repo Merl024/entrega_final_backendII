@@ -1,24 +1,27 @@
 <div>
     {{!-- Las vistas que tengan los usuarios con role 'user' --}}
+    <h1>Tu perfil</h1>
+    <p> {{user.first_name}} {{user.last_name}} </p>
+    <p>{{user.name}}</p>
+    <p>{{user.email}}</p>
+    <p>{{user.age}}</p>
     {{#if user}}
-        <h1>Tu perfil</h1>
-        <p>{{user.first_name}} {{user.last_name}}</p>
-        <p>{{user.email}}</p>
-        <p>{{user.age}}</p>
-        <h2>Todos los productos en los carritos:</h2>
-            {{#if allProducts.length}}
-                <ul>
-                    {{#each allProducts}}
-                        <li>
-                            {{this.product.title}} - Cantidad: {{this.quantity}}
-                        </li>
-                    {{/each}}
-                </ul>
-                {{else}}
-                    <h6>No hay productos en los carritos.</h6>
-            {{/if}}
-            <a href="/users/shop" class="btn btn-primary"> Ver productos </a>
-            <a href="/carts/{{user.cart.[0]._id}}" class="btn btn-success">Ver carrito</a>
+        {{#unless isAdmin}}
+            <h2>Todos los productos en los carritos:</h2>
+                {{#if allProducts.length}}
+                    <ul>
+                        {{#each allProducts}}
+                            <li>
+                                {{this.product.title}} - Cantidad: {{this.quantity}}
+                            </li>
+                        {{/each}}
+                    </ul>
+                    {{else}}
+                        <h6>No hay productos en los carritos.</h6>
+                {{/if}}
+                <a href="/users/shop" class="btn btn-primary"> Ver productos </a>
+                <a href="/carts/{{user.cart.[0]._id}}" class="btn btn-success">Ver carrito</a>
+        {{/unless}}
     {{#if isAdmin}}
     {{!-- Las vistas que tengan los usuarios con role 'admin' --}}
         <h2>Panel de administrador</h2>
